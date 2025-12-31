@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>RVR & JC SGPA Calculator</title>
+
+<style>
+*{box-sizing:border-box}
+body{
+  margin:0; min-height:100vh; font-family:'Segoe UI',sans-serif;
+  background:linear-gradient(-45deg,#667eea,#764ba2,#43cea2,#185a9d);
+  background-size:400% 400%; animation:bgMove 12s ease infinite;
+  display:flex; justify-content:center; align-items:center;
+}
+@keyframes bgMove{
+  0%{background-position:0% 50%}
+  50%{background-position:100% 50%}
+  100%{background-position:0% 50%}
+}
+.container{
+  width:540px; max-width:95%; padding:25px; border-radius:18px;
+  background:rgba(255,255,255,0.15); backdrop-filter:blur(14px);
+  box-shadow:0 20px 40px rgba(0,0,0,0.3); color:#fff;
+}
+.logo-box{display:flex; justify-content:center; margin-bottom:8px}
+.logo-box img{width:90px; filter:drop-shadow(0 4px 8px rgba(0,0,0,.4))}
+h2,h3{text-align:center; margin:4px 0}
+h3{font-weight:500; opacity:.9}
+
+input,select,button{
+  width:100%; padding:12px; border-radius:10px; border:none; outline:none;
+  margin-top:10px; font-size:15px;
+}
+input,select{background:#fff; color:#333}
+
+.subject{
+  background:rgba(255,255,255,0.2); padding:12px; border-radius:12px; margin-top:12px;
+}
+.sub-name{font-weight:600}
+.sub-credit{font-size:13px; opacity:.85; margin-bottom:5px}
+
+button{
+  background:linear-gradient(135deg,#00c853,#64dd17);
+  color:#fff; font-size:18px; font-weight:bold; cursor:pointer;
+}
+button:hover{transform:translateY(-2px); box-shadow:0 10px 20px rgba(0,0,0,.3)}
+
+#res{margin-top:18px; text-align:center; font-size:20px; font-weight:bold; color:#ffeb3b}
+#msg{text-align:center; margin-top:6px; font-size:14px}
+
+/* Grade colors */
+select.grade-a-plus{background:#1b5e20;color:#fff}
+select.grade-a{background:#2e7d32;color:#fff}
+select.grade-b{background:#9ccc65;color:#000}
+select.grade-c{background:#fff176;color:#000}
+select.grade-d{background:#ffb74d;color:#000}
+select.grade-e{background:#ef9a9a;color:#000}
+select.grade-f{background:#c62828;color:#fff}
+
+/* Department colors */
+option.ece{background:#ff4d4d;color:#fff}
+option.me{background:#87ceeb}
+option.it{background:#d2b48c}
+option.eee{background:#5c4033;color:#fff}
+option.cse{background:#006400;color:#fff}
+option.csd{background:#ff69b4}
+option.co{background:#ff8c00}
+option.ch{background:#808080;color:#fff}
+option.csm{background:#39ff14}
+option.ce{background:#9acd32}
+option.cb{background:#008080;color:#fff}
+
+@media print{
+  body{background:#fff}
+  button{display:none}
+  .container{background:#fff;color:#000;box-shadow:none}
+}
+</style>
+</head>
+
+<body>
+<div class="container" id="printArea">
+
+  <div class="logo-box">
+    <img src="rvrjc-logo.png" alt="RVR & JC Logo">
+  </div>
+
+  <h2>RVR & JC College of Engineering</h2>
+  <h3>B.Tech II Year (R24)</h3>
+  <h2>🎓 SGPA Calculator</h2>
+  <div style="text-align:center;font-size:12px;opacity:.85">
+    Created by Y24EC134 (O.P.C)
+  </div>
+
+  <input id="name" placeholder="Enter Student Name">
+
+  <select id="dept" onchange="loadSubjects()">
+    <option value="">Select Department</option>
+    <option class="ece" value="ECE">ECE</option>
+    <option class="me" value="ME">ME</option>
+    <option class="it" value="IT">IT</option>
+    <option class="eee" value="EEE">EEE</option>
+    <option class="cse" value="CSE">CSE</option>
+    <option class="csd" value="CSD">CSD</option>
+    <option class="co" value="CO">CO (IoT)</option>
+    <option class="ch" value="CH">CH</option>
+    <option class="csm" value="CSM">CSM</option>
+    <option class="ce" value="CE">CE</option>
+    <option class="cb" value="CB">CB</option>
+    <option value="COMMON">COMMON (Verification)</option>
+  </select>
+
+  <div id="subjects"></div>
+
+  <button onclick="calc()">Calculate SGPA</button>
+  <button onclick="window.print()">Download PDF</button>
+
+  <div id="res"></div>
+  <div id="msg">All the best for your achievements 🌟</div>
+</div>
+
+<script>
+const gradesHTML=`
+<option value="10">A+</option>
+<option value="9">A</option>
+<option value="8">B</option>
+<option value="7">C</option>
+<option value="6">D</option>
+<option value="5">E</option>
+<option value="0">F</option>`;
+
+/* Department data (credits only; MC excluded) */
+const data={
+  ECE:[
+    ["Numerical Methods, Probability & Statistics",3],
+    ["Data Structures using Python",3],
+    ["Digital Electronics & Logic Design",3],
+    ["Signals and Systems",3],
+    ["Analog Circuits",3],
+    ["SEC-I",2],
+    ["Design Thinking",2],
+    ["DS Lab",1],
+    ["DELD Lab",1.5]
+  ],
+  ME:[
+    ["Material Science",3],
+    ["Strength of Materials",3],
+    ["Manufacturing Processes",3],
+    ["Thermodynamics",3],
+    ["Kinematics",3],
+    ["SEC-I",2],
+    ["Design Thinking",2],
+    ["Machine Drawing",1.5],
+    ["Modelling Lab",1]
+  ]
+};
+
+let credits=[];
+
+function loadSubjects(){
+  const dept=document.getElementById("dept").value;
+  const box=document.getElementById("subjects");
+  box.innerHTML=""; credits=[];
+
+  if(dept==="COMMON"){
+    box.innerHTML=`
+      <div class="subject">
+        Enter Credits (comma separated)
+        <input id="cc" placeholder="3,3,2,1.5">
+      </div>
+      <div class="subject">
+        Enter Grade Points (comma separated)
+        <input id="cg" placeholder="10,9,8,7">
+      </div>`;
+    return;
+  }
+
+  if(!data[dept]) return;
+
+  data[dept].forEach(s=>{
+    box.innerHTML+=`
+      <div class="subject">
+        <div class="sub-name">${s[0]}</div>
+        <div class="sub-credit">Credits: ${s[1]}</div>
+        <select class="g" onchange="colorGrade(this)">
+          ${gradesHTML}
+        </select>
+      </div>`;
+    credits.push(s[1]);
+  });
+}
+
+function colorGrade(sel){
+  sel.classList.remove(
+    "grade-a-plus","grade-a","grade-b","grade-c","grade-d","grade-e","grade-f"
+  );
+  switch(sel.value){
+    case "10": sel.classList.add("grade-a-plus"); break;
+    case "9":  sel.classList.add("grade-a"); break;
+    case "8":  sel.classList.add("grade-b"); break;
+    case "7":  sel.classList.add("grade-c"); break;
+    case "6":  sel.classList.add("grade-d"); break;
+    case "5":  sel.classList.add("grade-e"); break;
+    case "0":  sel.classList.add("grade-f"); break;
+  }
+}
+
+/* ===== ALERTS 1 & 2 ADDED HERE ===== */
+function calc(){
+  const nameField=document.getElementById("name");
+  const deptField=document.getElementById("dept");
+  const name=nameField.value.trim();
+
+  // ALERT 1: Name not entered
+  if(name===""){
+    alert("Please enter student name");
+    nameField.focus();
+    return;
+  }
+
+  // ALERT 2: Department not selected
+  if(deptField.value===""){
+    alert("Please select a department");
+    deptField.focus();
+    return;
+  }
+
+  let tp=0, tc=0;
+
+  if(deptField.value==="COMMON"){
+    const c=document.getElementById("cc").value.split(",");
+    const g=document.getElementById("cg").value.split(",");
+    for(let i=0;i<c.length;i++){
+      tc+=+c[i]; tp+=+c[i]*+g[i];
+    }
+  }else{
+    const g=document.getElementsByClassName("g");
+    for(let i=0;i<g.length;i++){
+      tc+=credits[i]; tp+=credits[i]*g[i].value;
+    }
+  }
+
+  document.getElementById("res").innerHTML =
+    `Name: <b>${name}</b><br>SGPA = <b>${(tp/tc).toFixed(2)}</b>`;
+}
+</script>
+</body>
+</html>
