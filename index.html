@@ -129,7 +129,9 @@ const gradesHTML=`
 <option value="0">F</option>`;
 
 /* Department data (credits only; MC excluded) */
-const data={
+<script>
+/* Department data (credits only; MC excluded) */
+const data = {
   ECE:[
     ["Numerical Methods, Probability & Statistics",3],
     ["Data Structures using Python",3],
@@ -141,6 +143,7 @@ const data={
     ["DS Lab",1],
     ["DELD Lab",1.5]
   ],
+
   ME:[
     ["Material Science",3],
     ["Strength of Materials",3],
@@ -151,8 +154,72 @@ const data={
     ["Design Thinking",2],
     ["Machine Drawing",1.5],
     ["Modelling Lab",1]
+  ],
+
+  IT:[
+    ["Maths",3],["OOP with Java",3],["DBMS",3],["OS",3],
+    ["Software Engineering",3],["SEC-I",2],["Design Thinking",2],
+    ["Java Lab",1.5],["DBMS Lab",1]
+  ],
+
+  EEE:[
+    ["Maths",3],["Electrical Circuits",3],["EMF",3],
+    ["Power Systems",3],["Control Systems",3],
+    ["SEC-I",2],["Design Thinking",2],
+    ["Circuits Lab",1.5],["EMF Lab",1]
+  ],
+
+  CSE:[
+    ["Maths",3],["DSA",3],["Computer Organization",3],
+    ["OS",3],["DBMS",3],
+    ["SEC-I",2],["Design Thinking",2],
+    ["DSA Lab",1.5],["DBMS Lab",1]
+  ],
+
+  CSD:[
+    ["Maths",3],["AI Basics",3],["Python Programming",3],
+    ["Data Science",3],["ML Intro",3],
+    ["SEC-I",2],["Design Thinking",2],
+    ["Python Lab",1.5],["ML Lab",1]
+  ],
+
+  CO:[
+    ["Maths",3],["IoT",3],["Sensors",3],
+    ["Embedded Systems",3],["Computer Networks",3],
+    ["SEC-I",2],["Design Thinking",2],
+    ["IoT Lab",1.5],["Embedded Lab",1]
+  ],
+
+  CH:[
+    ["Maths",3],["Chemical Engineering",3],["Thermodynamics",3],
+    ["Fluid Mechanics",3],["Heat Transfer",3],
+    ["SEC-I",2],["Design Thinking",2],
+    ["Chem Lab",1.5],["Thermal Lab",1]
+  ],
+
+  CSM:[
+    ["Maths",3],["Python",3],["Data Structures",3],
+    ["Artificial Intelligence",3],["Machine Learning",3],
+    ["SEC-I",2],["Design Thinking",2],
+    ["Python Lab",1.5],["AI Lab",1]
+  ],
+
+  CE:[
+    ["Maths",3],["Strength of Materials",3],["Surveying",3],
+    ["Geotechnical Engineering",3],["Structural Analysis",3],
+    ["SEC-I",2],["Design Thinking",2],
+    ["Survey Lab",1.5],["Materials Lab",1]
+  ],
+
+  CB:[
+    ["Maths",3],["Biology",3],["Biochemistry",3],
+    ["Genetics",3],["Bioinformatics",3],
+    ["SEC-I",2],["Design Thinking",2],
+    ["Bio Lab",1.5],["Genetics Lab",1]
   ]
 };
+
+
 
 let credits=[];
 
@@ -245,3 +312,4 @@ function calc(){
 </script>
 </body>
 </html>
+
